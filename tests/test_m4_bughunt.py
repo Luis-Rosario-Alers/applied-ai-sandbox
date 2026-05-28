@@ -1,6 +1,8 @@
 import pytest
 
 def average_rating(rating):
+    if len(rating) == 0:
+        return None
     return sum(rating) / len(rating)
 
 @pytest.mark.parametrize("input_list, expected_output", [
