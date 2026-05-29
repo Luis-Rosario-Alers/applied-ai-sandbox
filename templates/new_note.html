@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>New Note · Sandbox</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
-    label { display: block; margin: 1rem 0 0.25rem; font-weight: 600; }
-    input, textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px; font: inherit; }
-    .actions { margin-top: 1.5rem; }
-    button { background: #1a2540; color: #fff; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    a { color: #555; margin-left: 1rem; }
-    .error { color: #b00020; margin-top: 0.25rem; font-size: 0.9rem; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <h1>New note</h1>
+<body class="form-page">
+  <div class="page-wrapper">
 
-  <form method="POST">
-    <label for="title">Title</label>
-    <input id="title" name="title" type="text" value="{{ title or '' }}">
-    {% if errors and errors.get('title') %}<div class="error">{{ errors['title'] }}</div>{% endif %}
+    <h1>New note</h1>
 
-    <label for="body">Body</label>
-    <textarea id="body" name="body" rows="6">{{ body or '' }}</textarea>
-    {% if errors and errors.get('body') %}<div class="error">{{ errors['body'] }}</div>{% endif %}
+    <form method="POST">
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text"
+             value="{{ title or '' }}"
+             class="{% if errors and errors.get('title') %}has-error{% endif %}">
+      {% if errors and errors.get('title') %}<span class="error">{{ errors['title'] }}</span>{% endif %}
 
-    <label for="tags">Tags (comma-separated, optional)</label>
-    <input id="tags" name="tags" type="text" value="{{ tags or '' }}">
+      <label for="body">Body</label>
+      <textarea id="body" name="body" rows="6"
+                class="{% if errors and errors.get('body') %}has-error{% endif %}">{{ body or '' }}</textarea>
+      {% if errors and errors.get('body') %}<span class="error">{{ errors['body'] }}</span>{% endif %}
 
-    <div class="actions">
-      <button type="submit">Save note</button>
-      <a href="{{ url_for('home') }}">Cancel</a>
-    </div>
-  </form>
+      <label for="tags">Tags <span style="font-weight:400;color:var(--color-text-muted)">(comma-separated, optional)</span></label>
+      <input id="tags" name="tags" type="text" value="{{ tags or '' }}">
+
+      <div class="actions">
+        <button type="submit" class="btn">Save note</button>
+        <a href="{{ url_for('home') }}" class="cancel-link">Cancel</a>
+      </div>
+    </form>
+
+  </div>
 </body>
 </html>

@@ -3,38 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <title>Sandbox Notes</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
-    h1 { margin-bottom: 0.25rem; }
-    .meta { color: #666; margin-bottom: 1.5rem; }
-    .note { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
-    .note h3 { margin: 0 0 0.5rem; }
-    a.btn { display: inline-block; background: #1a2540; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; }
-    .pin-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0 0.25rem; color: #333; vertical-align: middle; filter: grayscale(100%); }
-    .pin-btn.pinned { color: #e6a817; filter: none; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>Sandbox Notes</h1>
-  <p class="meta">A tiny note-taking app. Practice ground for the Applied AI cohort.</p>
+  <div class="page-wrapper">
 
-  <a class="btn" href="{{ url_for('new_note') }}">+ New note</a>
-
-  <h2 style="margin-top: 2rem;">Your notes ({{ note_pairs|length }})</h2>
-  {% if note_pairs %}
-    {% for idx, note in note_pairs %}
-      <div class="note">
-        <h3>
-          <form action="{{ url_for('pin_note', note_id=idx) }}" method="post" style="display:inline">
-            <button type="submit" class="pin-btn{% if note.pinned %} pinned{% endif %}" title="Toggle pin">📌</button>
-          </form>
-          {{ note.title }}
-        </h3>
-        <p>{{ note.body }}</p>
+    <header class="page-header">
+      <div class="page-header-text">
+        <h1>Sandbox Notes</h1>
+        <p class="meta">A tiny note-taking app. Practice ground for the Applied AI cohort.</p>
       </div>
-    {% endfor %}
-  {% else %}
-    <p>No notes yet.</p>
-  {% endif %}
+      <a class="btn" href="{{ url_for('new_note') }}">+ New note</a>
+    </header>
+
+    <h2 class="section-heading">Your notes ({{ note_pairs|length }})</h2>
+
+    {% if note_pairs %}
+      {% for idx, note in note_pairs %}
+        <div class="note">
+          <h3>
+            <form action="{{ url_for('pin_note', note_id=idx) }}" method="post" style="display:inline">
+              <button type="submit" class="pin-btn{% if note.pinned %} pinned{% endif %}" title="Toggle pin">📌</button>
+            </form>
+            {{ note.title }}
+          </h3>
+          <p>{{ note.body }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">No notes yet — create your first one above.</p>
+    {% endif %}
+
+  </div>
 </body>
 </html>
