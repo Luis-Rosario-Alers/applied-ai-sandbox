@@ -10,6 +10,8 @@
     .note { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
     .note h3 { margin: 0 0 0.5rem; }
     a.btn { display: inline-block; background: #1a2540; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; }
+    .pin-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0 0.25rem; color: #333; vertical-align: middle; filter: grayscale(100%); }
+    .pin-btn.pinned { color: #e6a817; filter: none; }
   </style>
 </head>
 <body>
@@ -18,11 +20,16 @@
 
   <a class="btn" href="{{ url_for('new_note') }}">+ New note</a>
 
-  <h2 style="margin-top: 2rem;">Your notes ({{ notes|length }})</h2>
-  {% if notes %}
-    {% for note in notes %}
+  <h2 style="margin-top: 2rem;">Your notes ({{ note_pairs|length }})</h2>
+  {% if note_pairs %}
+    {% for idx, note in note_pairs %}
       <div class="note">
-        <h3>{{ note.title }}</h3>
+        <h3>
+          <form action="{{ url_for('pin_note', note_id=idx) }}" method="post" style="display:inline">
+            <button type="submit" class="pin-btn{% if note.pinned %} pinned{% endif %}" title="Toggle pin">📌</button>
+          </form>
+          {{ note.title }}
+        </h3>
         <p>{{ note.body }}</p>
       </div>
     {% endfor %}

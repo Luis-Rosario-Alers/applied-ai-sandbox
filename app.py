@@ -5,6 +5,8 @@ describe exactly what "done" means.
 """
 from __future__ import annotations
 
+from datetime import datetime
+
 from flask import Flask, render_template, request, redirect, url_for
 
 
@@ -18,7 +20,14 @@ def create_app() -> Flask:
 
     @app.route("/")
     def home():
-        return render_template("home.html", notes=app.notes)
+        pinned = sorted(
+            [(i, n) for i, n in enumerate(app.notes) if n.get("pinned")],
+            key=lambda pair: pair[1]["pinned_order"] or datetime.min,
+        )
+        unpinned = [(i, n) for i, n in enumerate(app.notes) if not n.get("pinned")]
+        # NOTE: Pinned notes display position do not match their real position in the list. All routes that modify notes are based on the real position within the list.
+        notes = pinned + unpinned
+        return render_template("home.html", note_pairs=notes)
 
     @app.route("/notes/new", methods=["GET", "POST"])
     def new_note():
@@ -26,21 +35,36 @@ def create_app() -> Flask:
             title = (request.form.get("title") or "").strip()
             body = (request.form.get("body") or "").strip()
             errors = {}
-            
+
             if not title:
                 errors["title"] = "Title is required"
             if not body:
                 errors["body"] = "Body is required"
-            
+
             raw_tags = (request.form.get("tags") or "").strip()
             tags = [t.strip() for t in raw_tags.split(",") if t.strip()]
 
             if errors:
                 return render_template("new_note.html", title=title, body=body, tags=raw_tags, errors=errors)
 
-            app.notes.append({"title": title, "body": body, "tags": tags})
+            app.notes.append({"title": title, "body": body, "tags": tags, "pinned": False, "pinned_order": None})
             return redirect(url_for("home"))
         return render_template("new_note.html")
+
+    @app.route("/notes/<int:note_id>/pin", methods=["POST"])
+    def pin_note(note_id):
+        '''
+        Toggle the pinned status of a note.
+        '''
+        if 0 <= note_id < len(app.notes):
+            note = app.notes[note_id]
+            if note.get("pinned"):
+                note["pinned"] = False
+                note["pinned_order"] = None
+            else:
+                note["pinned"] = True
+                note["pinned_order"] = datetime.now()
+        return redirect(url_for("home"))
 
     # TASK 02 will add a /notes/<idx>/delete route here.
 
