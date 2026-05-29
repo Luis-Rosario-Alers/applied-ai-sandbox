@@ -26,7 +26,8 @@ def create_app() -> Flask:
         )
         unpinned = [(i, n) for i, n in enumerate(app.notes) if not n.get("pinned")]
         # NOTE: Pinned notes display position do not match their real position in the list. All routes that modify notes are based on the real position within the list.
-        return render_template("home.html", note_pairs=pinned + unpinned)
+        notes = pinned + unpinned
+        return render_template("home.html", note_pairs=notes)
 
     @app.route("/notes/new", methods=["GET", "POST"])
     def new_note():
@@ -52,6 +53,9 @@ def create_app() -> Flask:
 
     @app.route("/notes/<int:note_id>/pin", methods=["POST"])
     def pin_note(note_id):
+        '''
+        Toggle the pinned status of a note.
+        '''
         if 0 <= note_id < len(app.notes):
             note = app.notes[note_id]
             if note.get("pinned"):
