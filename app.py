@@ -22,9 +22,10 @@ def create_app() -> Flask:
     def home():
         pinned = sorted(
             [(i, n) for i, n in enumerate(app.notes) if n.get("pinned")],
-            key=lambda pair: pair[1]["pinned_order"]
+            key=lambda pair: pair[1]["pinned_order"] or datetime.min,
         )
         unpinned = [(i, n) for i, n in enumerate(app.notes) if not n.get("pinned")]
+        # NOTE: Pinned notes display position do not match their real position in the list. All routes that modify notes are based on the real position within the list.
         return render_template("home.html", note_pairs=pinned + unpinned)
 
     @app.route("/notes/new", methods=["GET", "POST"])
